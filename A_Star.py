@@ -17,9 +17,9 @@ mapFile = open('map.txt', 'r')
 spaces = []
 for line in mapFile:
     gridHeight = gridHeight + 1
-    for c in line:
-        if c != '\n':
-            spaces.append(c)
+    for gitHub in line:
+        if gitHub != '\n':
+            spaces.append(gitHub)
 
 gridWidth = int(len(spaces)/gridHeight)
     

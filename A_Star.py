@@ -5,21 +5,6 @@
 import pygame, sys
 from pygame.locals import *
 
-class Node(object):
-    positionX = 0
-    positionY = 0
-    parent = (0,0)
-
-    def __init__(self, positionX, positionY, parent):
-        self.positionX = positionX
-        self.positionY = positionY
-        self.parent = parent
-
-    def makeNode(positionX, positionY, parent):
-        node = Node(positionX, positionY, parent)
-        return node
-
-
 #grid = input('Please choose square, rectangle, or hexagon:')
 startX = input('Please enter the starting point x value:')
 startY = input('Please enter the starting point y value:')
@@ -33,7 +18,7 @@ endY = int(endY)
 openList = list()
 closedList = list()
 
-node = Node(0, 0, (0,0))
+node = [0, 0, [0,0]]
 
 gridLength = 0
 gridHeight = 0
@@ -67,6 +52,11 @@ def main():
     pygame.init()
     displayMap = pygame.display.set_mode((windowWidth, windowHeight))
     pygame.display.set_caption('Project 3')
+    for x in range(gridWidth):
+        for y in range(gridHeight):
+            if 'o' == spaces[x + y * gridWidth]:
+                node = [x, y, [-1, -1]]
+                closedList.append(node)
     while True:
         drawGrid()
         #startAStar()
@@ -104,11 +94,6 @@ def drawGrid():
             if endX == x and endY == y:
                 newEX, newEY = pixelCoord(x, y)
                 pygame.draw.rect(displayMap, endTileColor, (newEX, newEY, tileSize - 1, tileSize - 1))
-            if 'o' == spaces[x + y * gridWidth]:
-                node = Node(x, y, (-1, -1))
-                closedList.append(node)
-                pygame.draw.rect(displayMap, obstacleColor, (rectx, recty, tileSize - 1, tileSize - 1))
-
 
 if __name__ == '__main__':
     main()

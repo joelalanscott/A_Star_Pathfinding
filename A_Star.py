@@ -5,6 +5,21 @@
 import pygame, sys
 from pygame.locals import *
 
+class Node(object):
+    positionX = 0
+    positionY = 0
+    parent = (0,0)
+
+    def __init__(self, positionX, positionY, parent):
+        self.positionX = positionX
+        self.positionY = positionY
+        self.parent = parent
+
+    def makeNode(positionX, positionY, parent):
+        node = Node(positionX, positionY, parent)
+        return node
+
+
 #grid = input('Please choose square, rectangle, or hexagon:')
 startX = input('Please enter the starting point x value:')
 startY = input('Please enter the starting point y value:')
@@ -15,6 +30,10 @@ startY = int(startY)
 endX = int(endX)
 endY = int(endY)
 
+openList = list()
+closedList = list()
+
+node = Node(0, 0, (0,0))
 
 gridLength = 0
 gridHeight = 0
@@ -44,26 +63,25 @@ obstacleColor = (255, 0, 255)
 backGround = (0, 0, 0)
 
 def main():
-
-    global displayMap
-
+    global displayMap, openList, closedList
     pygame.init()
     displayMap = pygame.display.set_mode((windowWidth, windowHeight))
     pygame.display.set_caption('Project 3')
     while True:
         drawGrid()
+        #startAStar()
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
         pygame.display.update()
 
+#def startAStar():
+
 def pixelCoord(x, y):
-    
     return xMargin + x * tileSize + 1, yMargin + y * tileSize + 1
 
 def drawGrid():
-
     displayMap.fill(backGround)
     for x in range(gridWidth + 1):
         firstx = x * tileSize + xMargin
@@ -71,14 +89,12 @@ def drawGrid():
         lastx = x * tileSize + xMargin
         lasty = yMargin + gridHeight * tileSize
         pygame.draw.line(displayMap, lineColor, (firstx, firsty), (lastx, lasty))
-
     for y in range(gridHeight + 1):
         firstx = xMargin
         firsty = y * tileSize + yMargin
         lastx = xMargin + gridWidth * tileSize
         lasty = yMargin + y * tileSize
         pygame.draw.line(displayMap, lineColor, (firstx, firsty), (lastx, lasty))
-
     for x in range(gridWidth):
         for y in range(gridHeight):
             rectx, recty = pixelCoord(x, y)
@@ -89,8 +105,10 @@ def drawGrid():
                 newEX, newEY = pixelCoord(x, y)
                 pygame.draw.rect(displayMap, endTileColor, (newEX, newEY, tileSize - 1, tileSize - 1))
             if 'o' == spaces[x + y * gridWidth]:
+                node = Node(x, y, (-1, -1))
+                closedList.append(node)
                 pygame.draw.rect(displayMap, obstacleColor, (rectx, recty, tileSize - 1, tileSize - 1))
-        
+
 
 if __name__ == '__main__':
     main()

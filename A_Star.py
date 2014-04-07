@@ -34,7 +34,7 @@ fps = 30
 startTileColor = (0, 255, 0)
 endTileColor = (255, 0, 0)
 lineColor = (0, 0, 255)
-obsticaleColor = (255, 0, 255)
+obstacleColor = (255, 0, 255)
 backGround = (0, 0, 0)
 
 def main():
@@ -45,14 +45,18 @@ def main():
     displayMap = pygame.display.set_mode((windowWidth, windowHeight))
     pygame.display.set_caption('Project 3')
     while True:
-        drawArea()
+        drawGrid()
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
         pygame.display.update()
+
+def pixelCoord(x, y):
     
-def drawArea():
+    return xMargin + x * tileSize + 1, yMargin + y * tileSize + 1
+
+def drawGrid():
 
     displayMap.fill(backGround)
     for x in range(gridWidth + 1):
@@ -69,6 +73,12 @@ def drawArea():
         lasty = yMargin + y * tileSize
         pygame.draw.line(displayMap, lineColor, (firstx, firsty), (lastx, lasty))
 
+    for x in range(gridWidth):
+        for y in range(gridHeight):
+            rectx, recty = pixelCoord(x, y)
+            if 'o' == spaces[x + y * gridWidth]:
+                pygame.draw.rect(displayMap, obstacleColor, (rectx, recty, tileSize - 1, tileSize - 1))
+        
 
 if __name__ == '__main__':
     main()

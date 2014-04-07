@@ -6,10 +6,16 @@ import pygame, sys
 from pygame.locals import *
 
 #grid = input('Please choose square, rectangle, or hexagon:')
-#startX = input('Please enter the starting point x value:')
-#startY = input('Please enter the starting point y value:')
-#endX = input('Please enter the ending point x value:')
-#endY = input('Please enter the ending point y value:')
+startX = input('Please enter the starting point x value:')
+startY = input('Please enter the starting point y value:')
+endX = input('Please enter the ending point x value:')
+endY = input('Please enter the ending point y value:')
+startX = int(startX)
+startY = int(startY)
+endX = int(endX)
+endY = int(endY)
+
+
 gridLength = 0
 gridHeight = 0
 
@@ -76,6 +82,12 @@ def drawGrid():
     for x in range(gridWidth):
         for y in range(gridHeight):
             rectx, recty = pixelCoord(x, y)
+            if startX == x and startY == y:
+                newSX, newSY = pixelCoord(x, y)
+                pygame.draw.rect(displayMap, startTileColor, (newSX, newSY, tileSize - 1, tileSize - 1))
+            if endX == x and endY == y:
+                newEX, newEY = pixelCoord(x, y)
+                pygame.draw.rect(displayMap, endTileColor, (newEX, newEY, tileSize - 1, tileSize - 1))
             if 'o' == spaces[x + y * gridWidth]:
                 pygame.draw.rect(displayMap, obstacleColor, (rectx, recty, tileSize - 1, tileSize - 1))
         

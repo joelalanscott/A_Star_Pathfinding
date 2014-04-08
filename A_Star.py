@@ -76,15 +76,23 @@ def startAStar():
 #        if currentNode :
             
             
-#def G(x):
-#    G = 
+def G(parent, openNode):
+    X = sum(parent)
+    Y = sum(openNode)
+    value = abs(X - Y)
+    if (value % 2) == 0:
+        G = 14
+    else:
+        G = 10
+#    openList.append(G)
+    return G
 
-def H(x):
+def H(openNode):
     H = [endX, endY]
     H = sum(H)
-    X = sum(x)
-    H = H - X
-    openList.append(H)
+    X = sum(openNode)
+    H = (H - X) * 10
+#    openList.append(H)
     return H
     
 def pixelCoord(x, y):

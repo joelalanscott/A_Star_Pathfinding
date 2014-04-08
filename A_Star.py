@@ -15,8 +15,10 @@ startY = int(startY)
 endX = int(endX)
 endY = int(endY)
 
+currentNodeHolder = []
+gHold = 0
+gFix = 0
 done = [endX, endY]
-
 openList = list()
 closedList = list()
 currentNode = []
@@ -50,7 +52,7 @@ obstacleColor = (255, 0, 255)
 backGround = (0, 0, 0)
 
 def main():
-    global displayMap, openList, closedList, currentNode
+    global displayMap, openList, closedList, currentNode, gHold, gFix, currentNodeHolder
     pygame.init()
     displayMap = pygame.display.set_mode((windowWidth, windowHeight))
     pygame.display.set_caption('Project 3')
@@ -60,7 +62,7 @@ def main():
             #add obstacle squares to closed list
                 node = [x, y]
                 closedList.append(node)
-  #  startAStar()
+    startAStar()
     while True:
         drawGrid()
         for event in pygame.event.get():
@@ -74,13 +76,13 @@ def startAStar():
     #currentNode at x,       y
     currentNode = [startX, startY]
     openList.append(currentNode)
-    d = True
+    gHold = 0
     while currentNode != done:
         if openList != []:
             openList.remove(currentNode)
             closedList.append(currentNode)
-        if currentNode[0] != startX and currentNode[1] != startY:
             parent = [currentNode[0], currentNode[1]]
+            gHold = gFix + gHold
         for i in range(8):
             if i == 0 and currentNode[0] + 1 < gridWidth:
             #to right of parent
@@ -116,7 +118,10 @@ def startAStar():
                     openList.append(possible)
             elif i == 4 and currentNode[0] - 1 >= 0:
             #left
-                possible = [abs(currentNode[0] - 1), currentNode[1]]
+                if currentNode[0] - 1 == 0:
+                    possible = [currentNode[0] - 1, currentNode[1]]
+                else:
+                    possible = [abs(currentNode[0] - 1), currentNode[1]]
                 if possible in closedList or possible in openList:
                     continue
                 else:
@@ -173,25 +178,28 @@ def startAStar():
                     currentNode = openList[x]
             else:
                 currentNode = openList[x]
+        G(parent, currentNode)
+        currentNodeHolder.append(currentNode)
         print(currentNode)
         
 def G(parent, openNode): #parent and openNode (x, y)
     X = sum(parent)
     Y = sum(openNode)
-    value = abs(X - Y)
+    value = abs(Y - X)
     if (value % 2) == 0:
-        G = 14
+        G = 14 + gHold
+        gFix = 14
     else:
-        G = 10
-#    openList.append(G)
+        G = 10 + gHold
+        gFix = 10
     return G
 
 def H(openNode): #openNode (x, y)
-    H = [endX, endY]
-    H = sum(H)
-    X = sum(openNode)
-    H = (H - X) * 10
-#    openList.append(H)
+    c = [endX, endY]
+    hx = abs(endX - openNode[0])
+    hy = abs(endY - openNode[1])
+    X = hx + hy
+    H = X * 10
     return H
 
 def F(parent, openNode):
@@ -200,7 +208,7 @@ def F(parent, openNode):
     
 def pixelCoord(x, y):
     return xMargin + x * tileSize + 1, yMargin + y * tileSize + 1
-
+    
 def drawGrid():
     displayMap.fill(backGround)
     for x in range(gridHeight + 1):
@@ -217,6 +225,12 @@ def drawGrid():
         lastx = x * tileSize + xMargin
         lasty = yMargin + gridHeight * tileSize
         pygame.draw.line(displayMap, lineColor, (firstx, firsty), (lastx, lasty))
+    for x in range(len(currentNodeHolder)):
+        hold = currentNodeHolder[x]
+        x = hold[0]
+        y = hold[1]
+        pixX, pixY = pixelCoord(x, y)
+        pygame.draw.rect(displayMap, lineColor, (pixX + 7, pixY + 7, tileSize - 15, tileSize -15))
     for x in range(gridWidth):
         for y in range(gridHeight):
             rectx, recty = pixelCoord(x, y)

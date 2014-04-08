@@ -15,11 +15,13 @@ startY = int(startY)
 endX = int(endX)
 endY = int(endY)
 
+done = [endX, endY]
+
 openList = list()
 closedList = list()
-
-node = (0, 0, [0,0])
-
+currentNode = []
+node = [0, 0]
+lowest = []
 gridLength = 0
 gridHeight = 0
 
@@ -48,7 +50,7 @@ obstacleColor = (255, 0, 255)
 backGround = (0, 0, 0)
 
 def main():
-    global displayMap, openList, closedList
+    global displayMap, openList, closedList, currentNode
     pygame.init()
     displayMap = pygame.display.set_mode((windowWidth, windowHeight))
     pygame.display.set_caption('Project 3')
@@ -56,9 +58,9 @@ def main():
         for y in range(gridHeight):
             if 'o' == spaces[x + y * gridWidth]:
             #add obstacle squares to closed list
-                node = (x, y, [-1, -1])
+                node = [x, y]
                 closedList.append(node)
-    startAStar()
+  #  startAStar()
     while True:
         drawGrid()
         for event in pygame.event.get():
@@ -69,14 +71,111 @@ def main():
 
 def startAStar():
     parent = [startX, startY]
-    #currentNode at x,       y,     parent
-    currentNode = (startX, startY, [-1, -1])
+    #currentNode at x,       y
+    currentNode = [startX, startY]
     openList.append(currentNode)
-#    while openList:
-#        if currentNode :
-            
-            
-def G(parent, openNode):
+    d = True
+    while currentNode != done:
+        if openList != []:
+            openList.remove(currentNode)
+            closedList.append(currentNode)
+        if currentNode[0] != startX and currentNode[1] != startY:
+            parent = [currentNode[0], currentNode[1]]
+        for i in range(8):
+            if i == 0 and currentNode[0] + 1 < gridWidth:
+            #to right of parent
+                possible = [currentNode[0] + 1, currentNode[1]]
+                if possible in closedList or possible in openList:
+                    continue
+                else:
+                    openList.append(possible)
+            elif i == 1 and (currentNode[0] + 1 < gridWidth and currentNode[1] + 1 < gridHeight):
+            #right/down
+                possible = [currentNode[0] + 1, currentNode[1] + 1]
+                if possible in closedList or possible in openList:
+                    continue
+                elif [currentNode[0] + 1, currentNode[1]] in closedList or [currentNode[0], currentNode[1] + 1] in closedList:
+                    continue
+                else:
+                    openList.append(possible)
+            elif i == 2 and currentNode[1] + 1 < gridHeight:
+            #down
+                possible = [currentNode[0], currentNode[1] + 1]
+                if possible in closedList or possible in openList:
+                    continue
+                else:
+                    openList.append(possible)
+            elif i == 3 and (currentNode[0] - 1 >= 0 and currentNode[1] + 1 < gridHeight):
+            #left/down
+                possible = [abs(currentNode[0] - 1), currentNode[1] + 1]
+                if possible in closedList or possible in openList:
+                    continue
+                elif [currentNode[0] - 1, currentNode[1]] in closedList or [currentNode[0], currentNode[1] + 1] in closedList:
+                    continue
+                else:
+                    openList.append(possible)
+            elif i == 4 and currentNode[0] - 1 >= 0:
+            #left
+                possible = [abs(currentNode[0] - 1), currentNode[1]]
+                if possible in closedList or possible in openList:
+                    continue
+                else:
+                    openList.append(possible)                
+            elif i == 5 and (currentNode[0] - 1 >= 0 and currentNode[1] - 1 >= 0):
+            #left/up
+                possible = [abs(currentNode[0] - 1), abs(currentNode[1] - 1)]
+                if possible in closedList or possible in openList:
+                    continue
+                elif [currentNode[0] - 1, currentNode[1]] in closedList or [currentNode[0], currentNode[1] - 1] in closedList:
+                    continue
+                else:
+                    openList.append(possible)
+            elif i == 6 and currentNode[1] - 1 >= 0:
+            #up
+                possible = [currentNode[0], abs(currentNode[1] - 1)]
+                if possible in closedList or possible in openList:
+                    continue
+                else:
+                    openList.append(possible)
+            elif i == 7 and (currentNode[1] - 1 >= 0 and currentNode[0] + 1 < gridWidth):
+            #up/right
+                possible = [currentNode[0] + 1, abs(currentNode[1] - 1)]
+                if possible in closedList or possible in openList:
+                    continue
+                elif [currentNode[0] + 1, currentNode[1]] in closedList or [currentNode[0], currentNode[1] - 1] in closedList:
+                    continue
+                else:
+                    openList.append(possible)
+        for r in range(len(openList)):
+            if (len(openList)) > 1:
+                if r == 0:
+                    compare1 = F(parent, openList[r])
+                    continue
+                else:
+                    compare2 = F(parent, openList[r])
+                    if compare1 > compare2:
+                        lowest.append(compare2)
+                        compare1 = compare2
+                    elif compare2 > compare1:
+                        lowest.append(compare1)
+                        compare1 = compare2
+                lowest.sort()
+                if len(lowest) > 1:
+                    if lowest[0] > lowest[1]:
+                        lowest.remove(lowest[0])
+                    elif lowest[1] > lowest[0]:
+                        lowest.remove(lowest[1])
+                    else:
+                        lowest.remove(lowest[1])
+        for x in range(len(openList)):
+            if (len(openList)) > 1:
+                if lowest[0] == F(parent, openList[x]):
+                    currentNode = openList[x]
+            else:
+                currentNode = openList[x]
+        print(currentNode)
+        
+def G(parent, openNode): #parent and openNode (x, y)
     X = sum(parent)
     Y = sum(openNode)
     value = abs(X - Y)
@@ -87,13 +186,17 @@ def G(parent, openNode):
 #    openList.append(G)
     return G
 
-def H(openNode):
+def H(openNode): #openNode (x, y)
     H = [endX, endY]
     H = sum(H)
     X = sum(openNode)
     H = (H - X) * 10
 #    openList.append(H)
     return H
+
+def F(parent, openNode):
+    F = G(parent, openNode) + H(openNode)
+    return F
     
 def pixelCoord(x, y):
     return xMargin + x * tileSize + 1, yMargin + y * tileSize + 1

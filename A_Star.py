@@ -18,7 +18,7 @@ endY = int(endY)
 openList = list()
 closedList = list()
 
-node = [0, 0, [0,0]]
+node = (0, 0, [0,0])
 
 gridLength = 0
 gridHeight = 0
@@ -55,45 +55,71 @@ def main():
     for x in range(gridWidth):
         for y in range(gridHeight):
             if 'o' == spaces[x + y * gridWidth]:
-                node = [x, y, [-1, -1]]
+            #add obstacle squares to closed list
+                node = (x, y, [-1, -1])
                 closedList.append(node)
+    startAStar()
     while True:
         drawGrid()
-        #startAStar()
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
         pygame.display.update()
 
-#def startAStar():
+def startAStar():
+    parent = [startX, startY]
+    #currentNode at x,       y,     parent
+    currentNode = (startX, startY, [-1, -1])
+    openList.append(currentNode)
+#    while openList:
+#        if currentNode :
+            
+            
+#def G(x):
+#    G = 
 
+def H(x):
+    H = [endX, endY]
+    H = sum(H)
+    X = sum(x)
+    H = H - X
+    openList.append(H)
+    return H
+    
 def pixelCoord(x, y):
     return xMargin + x * tileSize + 1, yMargin + y * tileSize + 1
 
 def drawGrid():
     displayMap.fill(backGround)
+    for x in range(gridHeight + 1):
+    #draw horizontal lines
+        firstx = xMargin
+        firsty = x * tileSize + yMargin
+        lastx = xMargin + gridWidth * tileSize
+        lasty = yMargin + x * tileSize
+        pygame.draw.line(displayMap, lineColor, (firstx, firsty), (lastx, lasty))
     for x in range(gridWidth + 1):
+    #draw vertical lines
         firstx = x * tileSize + xMargin
         firsty = yMargin
         lastx = x * tileSize + xMargin
         lasty = yMargin + gridHeight * tileSize
         pygame.draw.line(displayMap, lineColor, (firstx, firsty), (lastx, lasty))
-    for y in range(gridHeight + 1):
-        firstx = xMargin
-        firsty = y * tileSize + yMargin
-        lastx = xMargin + gridWidth * tileSize
-        lasty = yMargin + y * tileSize
-        pygame.draw.line(displayMap, lineColor, (firstx, firsty), (lastx, lasty))
     for x in range(gridWidth):
         for y in range(gridHeight):
             rectx, recty = pixelCoord(x, y)
             if startX == x and startY == y:
+            #draw start square
                 newSX, newSY = pixelCoord(x, y)
                 pygame.draw.rect(displayMap, startTileColor, (newSX, newSY, tileSize - 1, tileSize - 1))
             if endX == x and endY == y:
+            #draw end square
                 newEX, newEY = pixelCoord(x, y)
                 pygame.draw.rect(displayMap, endTileColor, (newEX, newEY, tileSize - 1, tileSize - 1))
+            if 'o' == spaces[x + y * gridWidth]:
+            #draw obstacle squares
+                pygame.draw.rect(displayMap, obstacleColor, (rectx, recty, tileSize - 1, tileSize - 1))
 
 if __name__ == '__main__':
     main()

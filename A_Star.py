@@ -5,7 +5,7 @@
 import pygame, sys
 from pygame.locals import *
 
-#grid = input('Please choose square, rectangle, or hexagon:')
+file = input('Please choose file:')
 startX = input('Please enter the starting point x value:')
 startY = input('Please enter the starting point y value:')
 endX = input('Please enter the ending point x value:')
@@ -27,7 +27,7 @@ lowest = []
 gridLength = 0
 gridHeight = 0
 
-mapFile = open('map.txt', 'r')
+mapFile = open(file + '.txt', 'r')
 spaces = []
 for line in mapFile:
     gridHeight = gridHeight + 1
@@ -211,6 +211,12 @@ def pixelCoord(x, y):
     
 def drawGrid():
     displayMap.fill(backGround)
+#    font = pygame.font.SysFont(None, 24)
+#    text = font.render(str(len(currentNodeHolder)), 1, (255, 255, 0))
+#    label = font.render("Steps = + text", 1, (255, 255, 0))
+#    displayMap.blit(label, (100, 100))
+                       
+    
     for x in range(gridHeight + 1):
     #draw horizontal lines
         firstx = xMargin
